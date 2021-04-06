@@ -1,4 +1,4 @@
-import sys,tweepy,csv,re
+import tweepy,csv,re
 from textblob import TextBlob
 import matplotlib.pyplot as plt
 
@@ -10,11 +10,11 @@ class SentimentAnalysis:
         self.tweetText = []
 
     def DownloadData(self):
-        # authenticating
-        consumerKey = ''
-        consumerSecret = ''
-        accessToken = ''
-        accessTokenSecret = ''
+        # authentication
+        consumerKey = ' '
+        consumerSecret = ' '
+        accessToken = ' '
+        accessTokenSecret = ' '
         auth = tweepy.OAuthHandler(consumerKey, consumerSecret)
         auth.set_access_token(accessToken, accessTokenSecret)
         api = tweepy.API(auth)
@@ -46,11 +46,11 @@ class SentimentAnalysis:
 
         # iterating through tweets fetched
         for tweet in self.tweets:
-            #Append to temp so that we can store in csv later. I use encode UTF-8
-            self.tweetText.append(self.cleanTweet(tweet.text).encode('utf-8'))
-            # print (tweet.text.translate(non_bmp_map))    #print tweet's text
-            analysis = TextBlob(tweet.text)
-            # print(analysis.sentiment)  # print tweet's polarity
+            
+            self.tweetText.append(self.cleanTweet(tweet.text).encode('utf-8')) # Append to a temp list 
+            
+            analysis = TextBlob(tweet.text) # clean tweets are passed to TextBlob
+           
             polarity += analysis.sentiment.polarity  # adding up polarities to find the average later
 
             if (analysis.sentiment.polarity == 0):  # adding reaction of how people are reacting to find average later
@@ -128,25 +128,22 @@ class SentimentAnalysis:
         return format(temp, '.2f')
 
     def plotPieChart(self, positive, wpositive, spositive, negative, wnegative, snegative, neutral, searchTerm, noOfSearchTerms):
+        
         labels = ['Positive [' + str(positive) + '%]', 'Weakly Positive [' + str(wpositive) + '%]','Strongly Positive [' + str(spositive) + '%]', 'Neutral [' + str(neutral) + '%]',
                   'Negative [' + str(negative) + '%]', 'Weakly Negative [' + str(wnegative) + '%]', 'Strongly Negative [' + str(snegative) + '%]']
+        
         sizes = [positive, wpositive, spositive, neutral, negative, wnegative, snegative]
         colors = ['yellowgreen','lightgreen','darkgreen', 'gold', 'red','lightsalmon','darkred']
-        patches, texts = plt.pie(sizes, colors=colors, startangle=90)
+        
+        patches, texts = plt.pie(sizes, colors=colors)
+        
         plt.legend(patches, labels, loc="best")
         plt.title('How people are reacting on ' + searchTerm + ' by analyzing ' + str(noOfSearchTerms) + ' Tweets.')
         plt.axis('equal')
         plt.tight_layout()
         plt.show()
-        
-        
-        
-        #plt.plot([3,1,4,1,5], 'ks-', mec='w', mew=5, ms=20)
-        #mpld3.enable_notebook()
-        #mpld3.show()
 
-
-
+%matplotlib qt5
 if __name__== "__main__":
     sa = SentimentAnalysis()
     sa.DownloadData()
